@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	queryInsert = `INSERT INTO rotations(banner_id, slot_id, description, create_at)
+	queryInsertRotation = `INSERT INTO rotations(banner_id, slot_id, description, create_at)
 		VALUES ($1, $2, $3, $4) RETURNING id`
 	queryFindAllBySlotID  = `SELECT * FROM rotations WHERE slot_id=$1`
 	queryRemoveByBannerID = `DELETE FROM rotations WHERE banner_id=$1`
@@ -42,7 +42,7 @@ func (r *RotationRepository) Add(ctx context.Context, rotation repository.Rotati
 
 	err := r.DB.QueryRowContext(
 		ctx,
-		queryInsert,
+		queryInsertRotation,
 		rotation.BannerID,
 		rotation.SlotID,
 		rotation.Description,
