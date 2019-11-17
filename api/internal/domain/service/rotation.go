@@ -93,6 +93,10 @@ func (b *RotationService) defineBanner(
 		if statistic.IsTypeClick() {
 			banner.Clicks++
 		}
+
+		banner.GroupID = statistic.GroupID
+
+		banners[banner.ID] = banner
 	}
 
 	selected := make([]int, 0, len(banners))
@@ -104,6 +108,7 @@ func (b *RotationService) defineBanner(
 		arms[i] = bannerID
 		selected = append(selected, banner.Views)
 		reward = append(reward, banner.Clicks)
+		i++
 	}
 
 	ucb1, err := algorithm.NewUCB1(selected, reward)

@@ -54,10 +54,13 @@ func (s *StatisticRepository) FindAllBySlotIDAndGroupID(
 		return nil, nil
 	}
 
-	statistics := make([]*repository.Statistic, 0, len(s.DB))
+	statistics := make([]*repository.Statistic, 0)
 
 	for _, statistic := range s.DB {
-		statistics = append(statistics, &statistic)
+		if statistic.SlotID == slotID && statistic.GroupID == groupID {
+			statistic := statistic
+			statistics = append(statistics, &statistic)
+		}
 	}
 
 	return statistics, nil
@@ -65,12 +68,12 @@ func (s *StatisticRepository) FindAllBySlotIDAndGroupID(
 
 // Removes statistics
 func (s *StatisticRepository) Remove(ctx context.Context, ID int) error {
+	s.Lock()
+	defer s.Unlock()
+
 	if _, has := s.DB[ID]; !has {
 		return ErrStatisticNotFound
 	}
-
-	s.Lock()
-	defer s.Unlock()
 
 	delete(s.DB, ID)
 
