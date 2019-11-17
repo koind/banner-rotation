@@ -198,5 +198,5 @@ func TestRotationService_SelectBanner(t *testing.T) {
 	expectedBannerID := 3
 
 	bannerID, _ := rotationService.SelectBanner(context.Background(), slotID, groupId)
-	assert.Equal(t, expectedBannerID, bannerID, "")
+	assert.Equal(t, expectedBannerID, bannerID, "banners ids must match")
 }
