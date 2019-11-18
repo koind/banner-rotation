@@ -96,7 +96,7 @@ func (s *RotationService) SetTransitionHandle(w http.ResponseWriter, r *http.Req
 			zap.Any("groupID", rotationForm.GroupID),
 		)
 
-		json.NewEncoder(w).Encode("ok")
+		w.Write([]byte("ok"))
 	}
 }
 

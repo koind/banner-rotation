@@ -12,7 +12,7 @@ import (
 const (
 	queryInsertRotation = `INSERT INTO rotations(banner_id, slot_id, description, create_at)
 		VALUES ($1, $2, $3, $4) RETURNING id`
-	queryFindRotationByBannerID = `SELECT * FROM events WHERE banner_id=$1`
+	queryFindRotationByBannerID = `SELECT * FROM rotations WHERE banner_id=$1`
 	queryFindAllBySlotID        = `SELECT * FROM rotations WHERE slot_id=$1`
 	queryRemoveByBannerID       = `DELETE FROM rotations WHERE banner_id=$1`
 )

@@ -15,6 +15,6 @@ create table statistics (
     group_id bigint not null,
     create_at timestamp not null
 );
-create index banner_idx on statistics (banner_id);
-create index slot_idx on statistics (slot_id);
-create index group_idx on statistics (group_id);
+create index banner_idx_s on statistics (banner_id);
+create index slot_idx_s on statistics (slot_id);
+create index group_idx_s on statistics (group_id);
