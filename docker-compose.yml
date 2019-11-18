@@ -11,6 +11,7 @@ services:
     build: ./api
     depends_on:
       - postgres
+      - rabbit
     restart: on-failure
     ports:
       - "7766:7766"
