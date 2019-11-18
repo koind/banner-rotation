@@ -17,7 +17,7 @@ type RotationService struct {
 }
 
 // Will return new http rotation service
-func NewRotationService(rotation service.RotationService, logger *zap.Logger) *RotationService {
+func NewHTTPRotationService(rotation service.RotationService, logger *zap.Logger) *RotationService {
 	return &RotationService{
 		RotationService: rotation,
 		logger:          logger,

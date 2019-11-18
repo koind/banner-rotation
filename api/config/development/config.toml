@@ -1,0 +1,14 @@
+[GRPCServer]
+Host = "0.0.0.0"
+Port = 7777
+
+[HTTPServer]
+Host = "0.0.0.0"
+Port = 7766
+
+[Postgres]
+DSN = "postgres://rotation:123123@postgres:5432/rotation?sslmode=disable"
+PingTimeout = 430
+MaxOpenConns = 10
+MaxIdleConns = 5
+ConnMaxLifetime = 15
