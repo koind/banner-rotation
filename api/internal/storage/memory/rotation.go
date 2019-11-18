@@ -38,6 +38,26 @@ func (r *RotationRepository) Add(ctx context.Context, rotation repository.Rotati
 	return &rotation, nil
 }
 
+// Find one rotation by banner id
+func (r *RotationRepository) FindOneByBannerID(ctx context.Context, bannerID int) (*repository.Rotation, error) {
+	r.RLock()
+	defer r.RUnlock()
+
+	if len(r.DB) <= 0 {
+		return nil, nil
+	}
+
+	var rotation repository.Rotation
+
+	for _, r := range r.DB {
+		if r.BannerID == bannerID {
+			rotation = r
+		}
+	}
+
+	return &rotation, nil
+}
+
 // Find all rotations by slot id
 func (r *RotationRepository) FindAllBySlotID(ctx context.Context, slotID int) ([]*repository.Rotation, error) {
 	r.RLock()

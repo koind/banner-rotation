@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"github.com/jmoiron/sqlx"
 	"github.com/koind/banner-rotation/api/internal/domain/repository"
 	"github.com/pkg/errors"
@@ -11,8 +12,9 @@ import (
 const (
 	queryInsertRotation = `INSERT INTO rotations(banner_id, slot_id, description, create_at)
 		VALUES ($1, $2, $3, $4) RETURNING id`
-	queryFindAllBySlotID  = `SELECT * FROM rotations WHERE slot_id=$1`
-	queryRemoveByBannerID = `DELETE FROM rotations WHERE banner_id=$1`
+	queryFindRotationByBannerID = `SELECT * FROM events WHERE banner_id=$1`
+	queryFindAllBySlotID        = `SELECT * FROM rotations WHERE slot_id=$1`
+	queryRemoveByBannerID       = `DELETE FROM rotations WHERE banner_id=$1`
 )
 
 // Postgres rotation repository
@@ -53,6 +55,48 @@ func (r *RotationRepository) Add(ctx context.Context, rotation repository.Rotati
 	}
 
 	return &rotation, nil
+}
+
+// Find one rotation by banner id
+func (r *RotationRepository) FindOneByBannerID(ctx context.Context, bannerID int) (*repository.Rotation, error) {
+	if ctx.Err() == context.Canceled {
+		r.logger.Info(
+			"Find one rotation was interrupted due to context cancellation",
+			zap.Int("bannerID", bannerID),
+		)
+
+		return nil, errors.New("find one rotation was interrupted due to context cancellation")
+	}
+
+	row := r.DB.QueryRowContext(ctx, queryFindRotationByBannerID, bannerID)
+
+	rotation := new(repository.Rotation)
+	err := row.Scan(
+		&rotation.ID,
+		&rotation.BannerID,
+		&rotation.SlotID,
+		&rotation.Description,
+		&rotation.CreateAt,
+	)
+
+	if err == sql.ErrNoRows {
+		r.logger.Warn(
+			"Could not find rotation by bannerID",
+			zap.Int("bannerID", bannerID),
+		)
+
+		return nil, errors.Wrap(err, "could not find rotation by bannerID")
+	} else if err != nil {
+		r.logger.Warn(
+			"Error when searching for rotation by bannerID",
+			zap.Error(err),
+			zap.Int("bannerID", bannerID),
+		)
+
+		return nil, errors.Wrap(err, "error when searching for rotation by bannerID")
+	}
+
+	return rotation, nil
 }
 
 // Find all rotations by slot id
