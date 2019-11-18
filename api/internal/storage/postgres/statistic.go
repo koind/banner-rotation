@@ -12,7 +12,7 @@ const (
 	queryInsertStatistic = `INSERT INTO statistics(type, banner_id, slot_id, group_id, create_at)
 		VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	queryFindAllBySlotIDAndGroupID = `SELECT * FROM statistics WHERE slot_id=$1 AND group_id=$2`
-	queryRemoveBystatisticID       = `DELETE FROM statistics WHERE id=$1`
+	queryRemoveByStatisticID       = `DELETE FROM statistics WHERE id=$1`
 )
 
 // Postgres statistic repository
@@ -103,7 +103,7 @@ func (s *StatisticRepository) Remove(ctx context.Context, ID int) error {
 		return errors.New("removal statistic was interrupted due to the cancellation context")
 	}
 
-	_, err := s.DB.ExecContext(ctx, queryRemoveBystatisticID, ID)
+	_, err := s.DB.ExecContext(ctx, queryRemoveByStatisticID, ID)
 	if err != nil {
 		return errors.Wrap(err, "error when remove statistic")
 	}
