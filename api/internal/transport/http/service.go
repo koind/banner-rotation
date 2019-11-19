@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// Http rotation service
+// HTTP rotation service
 type RotationService struct {
 	service.RotationService
 	logger *zap.Logger
