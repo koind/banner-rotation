@@ -1,3 +1,5 @@
+run: build up
+
 build:
 	docker-compose build
 
