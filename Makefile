@@ -12,6 +12,12 @@ reup:
 	docker-compose build ;\
 	docker-compose up -d ;\
 
+rmi:
+	docker rmi $(docker images -a -q)
+
+rm:
+	docker rm $(docker ps -a -f status=exited -q)
+
 test:
 	docker-compose -f docker-compose.test.yml up --build -d ;\
 	test_status=0 ;\
