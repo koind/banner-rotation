@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package="pb";
+
+import "google/protobuf/timestamp.proto";
+
+message RotationRequest {
+    int32 banner_id = 1;
+    int32 slot_id = 2;
+    string description = 3;
+}
+
+message RotationResponse {
+    int32 id = 1;
+    int32 banner_id = 2;
+    int32 slot_id = 3;
+    string description = 4;
+    google.protobuf.Timestamp create_at = 5;
+}
+
+message Select {
+    int32 slot_id = 1;
+    int32 group_id = 2;
+}
+
+message Banner {
+    int32 id = 1;
+}
+
+message Transition {
+    int32 banner_id = 1;
+    int32 group_id = 2;
+}
+
+message Status {
+    string status = 1;
+}
+
+// grpc-methods
+service Rotation {
+    // Adds a banner in the rotation
+    rpc AddBanner(RotationRequest) returns (RotationResponse);
+
+    // Sets the transition on the banner
+    rpc SetTransition(Transition) returns (Status);
+
+    // Selects a banner to display
+    rpc SelectBanner(Select) returns (Banner);
+
+    // Removes the banner from the rotation
+    rpc RemoveBanner(Banner) returns (Status);
+}
