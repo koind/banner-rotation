@@ -5,9 +5,11 @@ import (
 	"github.com/koind/banner-rotation/api/internal/config"
 	"github.com/koind/banner-rotation/api/internal/db"
 	"github.com/koind/banner-rotation/api/internal/domain/service"
+	"github.com/koind/banner-rotation/api/internal/rabbit"
 	"github.com/koind/banner-rotation/api/internal/storage/postgres"
 	"github.com/koind/banner-rotation/api/internal/transport/grpc"
 	"github.com/spf13/cobra"
+	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 	"log"
 	"time"
@@ -36,6 +38,12 @@ var GrpcServerCmd = &cobra.Command{
 			log.Fatalf("failing to connect to the database %v", err)
 		}
 
+		conn, err := amqp.Dial(cfg.RabbitMQ.URL)
+		if err != nil {
+			log.Fatalf("failing to connect to the rabbitmq %v", err)
+		}
+		defer conn.Close()
+
 		rotationRepository := postgres.NewRotationRepository(pg, *logger)
 		statisticRepository := postgres.NewStatisticRepository(pg, *logger)
 		statisticService := service.StatisticService{StatisticRepository: statisticRepository}
@@ -45,9 +53,13 @@ var GrpcServerCmd = &cobra.Command{
 			StatisticRepository: statisticRepository,
 		}
 
+		publisher := rabbit.NewPublisher(*conn, cfg.RabbitMQ.ExchangeName, cfg.RabbitMQ.QueueName)
+
 		gs := grpc.RotationServer{
 			Domain:          cfg.GRPCServer.GetDomain(),
 			RotationService: rotationService,
+			Publisher:       publisher,
+			Logger:          logger,
 		}
 
 		err = gs.Start()

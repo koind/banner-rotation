@@ -15,6 +15,7 @@ type Options struct {
 	Postgres   Postgres
 	GRPCServer GRPCServer
 	HTTPServer HTTPServer
+	RabbitMQ   RabbitMQ
 }
 
 // Initializes microservice configurations
@@ -57,4 +58,11 @@ type HTTPServer struct {
 // Returns the domain
 func (s HTTPServer) GetDomain() string {
 	return fmt.Sprintf("%s:%d", s.Host, s.Port)
+}
+
+// Settings RabbitMQ
+type RabbitMQ struct {
+	URL          string
+	ExchangeName string
+	QueueName    string
 }

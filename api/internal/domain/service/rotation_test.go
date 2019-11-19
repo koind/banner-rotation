@@ -54,17 +54,11 @@ func TestRotationService_SetTransition(t *testing.T) {
 		GroupID:  8,
 	}
 
-	err := rotationService.SetTransition(context.Background(), rotation, groupID)
+	statistic, err := rotationService.SetTransition(context.Background(), rotation, groupID)
 	assert.Nil(t, err)
 
-	statistics, _ := rotationService.StatisticRepository.FindAllBySlotIDAndGroupID(
-		context.Background(),
-		slotID,
-		groupID,
-	)
-
-	expectedStatistic.CreateAt = statistics[0].CreateAt
-	assert.Equal(t, &expectedStatistic, statistics[0])
+	expectedStatistic.CreateAt = statistic.CreateAt
+	assert.Equal(t, &expectedStatistic, statistic)
 }
 
 func TestRotationService_Remove(t *testing.T) {
@@ -197,6 +191,6 @@ func TestRotationService_SelectBanner(t *testing.T) {
 	groupId := 1
 	expectedBannerID := 3
 
-	bannerID, _ := rotationService.SelectBanner(context.Background(), slotID, groupId)
+	bannerID, _, _ := rotationService.SelectBanner(context.Background(), slotID, groupId)
 	assert.Equal(t, expectedBannerID, bannerID, "banners ids must match")
 }

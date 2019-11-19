@@ -34,7 +34,7 @@
   "queues": [],
   "exchanges": [
     {
-      "name": "banner",
+      "name": "statistics_of_rotation",
       "vhost": "/",
       "type": "direct",
       "durable": true,

@@ -5,8 +5,10 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/koind/banner-rotation/api/internal/domain/repository"
 	"github.com/koind/banner-rotation/api/internal/domain/service"
+	"github.com/koind/banner-rotation/api/internal/rabbit"
 	pb "github.com/koind/banner-rotation/api/internal/transport/grpc/api"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
@@ -16,6 +18,8 @@ import (
 type RotationServer struct {
 	Domain          string
 	RotationService service.RotationService
+	Publisher       rabbit.PublisherInterface
+	Logger          *zap.Logger
 }
 
 // Adds a banner in the rotation
@@ -67,9 +71,17 @@ func (s *RotationServer) SetTransition(ctx context.Context, t *pb.Transition) (*
 		return nil, err
 	}
 
-	err = s.RotationService.SetTransition(ctx, *rotation, groupID)
+	statistic, err := s.RotationService.SetTransition(ctx, *rotation, groupID)
 	if err != nil {
 		return nil, err
+	}
+
+	err = s.Publisher.Publish(ctx, *statistic)
+	if err != nil {
+		s.Logger.Error(
+			"Failed to send message to queue",
+			zap.Error(err),
+		)
 	}
 
 	return &pb.Status{Status: "ok"}, nil
@@ -84,9 +96,17 @@ func (s *RotationServer) SelectBanner(ctx context.Context, sl *pb.Select) (*pb.B
 	slotID := int(sl.GetSlotId())
 	groupID := int(sl.GetGroupId())
 
-	bannerID, err := s.RotationService.SelectBanner(ctx, slotID, groupID)
+	bannerID, statistic, err := s.RotationService.SelectBanner(ctx, slotID, groupID)
 	if err != nil {
 		return nil, err
+	}
+
+	err = s.Publisher.Publish(ctx, *statistic)
+	if err != nil {
+		s.Logger.Error(
+			"Failed to send message to queue",
+			zap.Error(err),
+		)
 	}
 
 	banner := &pb.Banner{

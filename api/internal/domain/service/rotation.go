@@ -35,38 +35,46 @@ func (b *RotationService) Remove(ctx context.Context, bannerID int) error {
 }
 
 // Increases the jump count by 1 for the specified banner in the specified group
-func (b *RotationService) SetTransition(ctx context.Context, rotation repository.Rotation, groupID int) error {
-	_, err := b.StatisticService.Save(ctx, rotation, groupID, repository.StatisticTypeClick)
+func (b *RotationService) SetTransition(
+	ctx context.Context,
+	rotation repository.Rotation,
+	groupID int,
+) (*repository.Statistic, error) {
+	statistic, err := b.StatisticService.Save(ctx, rotation, groupID, repository.StatisticTypeClick)
 	if err != nil {
-		return errors.Wrap(err, "error when set the transition")
+		return nil, errors.Wrap(err, "error when set the transition")
 	}
 
-	return nil
+	return statistic, nil
 }
 
 // Selects a banner to display
-func (b *RotationService) SelectBanner(ctx context.Context, slotID int, groupID int) (int, error) {
+func (b *RotationService) SelectBanner(
+	ctx context.Context,
+	slotID int,
+	groupID int,
+) (int, *repository.Statistic, error) {
 	rotations, err := b.RotationRepository.FindAllBySlotID(ctx, slotID)
 	if err != nil {
-		return 0, errors.Wrap(err, "error when searching for rotations by slot id for banner selection")
+		return 0, nil, errors.Wrap(err, "error when searching for rotations by slot id for banner selection")
 	}
 
 	statistics, err := b.StatisticRepository.FindAllBySlotIDAndGroupID(ctx, slotID, groupID)
 	if err != nil {
-		return 0, errors.Wrap(err, "error getting statistics for a selection of banner")
+		return 0, nil, errors.Wrap(err, "error getting statistics for a selection of banner")
 	}
 
 	rotation, err := b.defineBanner(rotations, statistics)
 	if err != nil {
-		return 0, errors.Wrap(err, "error while banner definition")
+		return 0, nil, errors.Wrap(err, "error while banner definition")
 	}
 
-	_, err = b.StatisticService.Save(ctx, *rotation, groupID, repository.StatisticTypeView)
+	statistic, err := b.StatisticService.Save(ctx, *rotation, groupID, repository.StatisticTypeView)
 	if err != nil {
-		return 0, errors.Wrap(err, "error while save view")
+		return 0, nil, errors.Wrap(err, "error while save view")
 	}
 
-	return rotation.BannerID, nil
+	return rotation.BannerID, statistic, nil
 }
 
 // Determines which banner should be displayed

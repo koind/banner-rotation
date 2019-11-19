@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/koind/banner-rotation/api/internal/domain/repository"
 	"github.com/koind/banner-rotation/api/internal/domain/service"
+	"github.com/koind/banner-rotation/api/internal/rabbit"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -13,13 +14,19 @@ import (
 // HTTP rotation service
 type RotationService struct {
 	service.RotationService
-	logger *zap.Logger
+	publisher rabbit.PublisherInterface
+	logger    *zap.Logger
 }
 
 // Will return new http rotation service
-func NewHTTPRotationService(rotation service.RotationService, logger *zap.Logger) *RotationService {
+func NewHTTPRotationService(
+	rotation service.RotationService,
+	publisher rabbit.PublisherInterface,
+	logger *zap.Logger,
+) *RotationService {
 	return &RotationService{
 		RotationService: rotation,
+		publisher:       publisher,
 		logger:          logger,
 	}
 }
@@ -81,7 +88,7 @@ func (s *RotationService) SetTransitionHandle(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err = s.SetTransition(r.Context(), *rotation, rotationForm.GroupID)
+	statistic, err := s.SetTransition(r.Context(), *rotation, rotationForm.GroupID)
 	if err != nil {
 		s.logger.Error(
 			"Error when set the transition on the banner",
@@ -97,6 +104,14 @@ func (s *RotationService) SetTransitionHandle(w http.ResponseWriter, r *http.Req
 		)
 
 		w.Write([]byte("ok"))
+	}
+
+	err = s.publisher.Publish(r.Context(), *statistic)
+	if err != nil {
+		s.logger.Error(
+			"Failed to send message to queue",
+			zap.Error(err),
+		)
 	}
 }
 
@@ -117,7 +132,7 @@ func (s *RotationService) SelectBannerHandle(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	bannerID, err := s.SelectBanner(r.Context(), rotationForm.SlotID, rotationForm.GroupID)
+	bannerID, statistic, err := s.SelectBanner(r.Context(), rotationForm.SlotID, rotationForm.GroupID)
 	if err != nil {
 		s.logger.Error(
 			"Error when select banner",
@@ -134,6 +149,14 @@ func (s *RotationService) SelectBannerHandle(w http.ResponseWriter, r *http.Requ
 		)
 
 		json.NewEncoder(w).Encode(bannerID)
+	}
+
+	err = s.publisher.Publish(r.Context(), *statistic)
+	if err != nil {
+		s.logger.Error(
+			"Failed to send message to queue",
+			zap.Error(err),
+		)
 	}
 }
 

@@ -12,3 +12,8 @@ PingTimeout = 430
 MaxOpenConns = 10
 MaxIdleConns = 5
 ConnMaxLifetime = 15
+
+[RabbitMQ]
+URL = "amqp://guest:guest@rabbit:5672/"
+ExchangeName = "statistics_of_rotation"
+QueueName = "banners"
