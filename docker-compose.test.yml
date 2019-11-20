@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  integration_tests:
+    build: ./e2e
+    command: "true"
+    environment:
+      TESTS_AMQP_DSN: "amqp://guest:guest@rabbit:5672/"
+    tty: true
+
+  api:
+    build: ./api
+    depends_on:
+      - rabbit
+      - postgres
+    restart: on-failure
+    ports:
+      - "7766:7766"
+    tty: true
+
+  postgres:
+    image: postgres:11.2
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: rotation
+      POSTGRES_PASSWORD: 123123
+      POSTGRES_DB: rotation
+    volumes:
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+
+  rabbit:
+    image: rabbitmq:3.7.17-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    expose:
+      - 15672
+    volumes:
+      - ./rabbit.def.json:/etc/rabbitmq/definitions.json:ro
+      - ./rabbit.config:/etc/rabbitmq/rabbitmq.config:ro
