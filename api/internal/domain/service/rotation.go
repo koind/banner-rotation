@@ -7,6 +7,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	ErrRotationsListEmpty = errors.New("rotations list can't be empty")
+)
+
 // Rotation service
 type RotationService struct {
 	StatisticService    StatisticServiceInterface
@@ -82,6 +86,10 @@ func (b *RotationService) defineBanner(
 	rotations []*repository.Rotation,
 	statistics []*repository.Statistic,
 ) (*repository.Rotation, error) {
+	if len(rotations) <= 0 {
+		return nil, ErrRotationsListEmpty
+	}
+
 	banners := make(map[int]repository.Banner, len(rotations))
 	for _, rotation := range rotations {
 		banners[rotation.BannerID] = repository.Banner{ID: rotation.BannerID}
