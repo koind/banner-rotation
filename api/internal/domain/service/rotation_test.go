@@ -82,115 +82,285 @@ func TestRotationService_Remove(t *testing.T) {
 }
 
 func TestRotationService_SelectBanner(t *testing.T) {
-	statisticRepository := memory.StatisticRepository{
-		DB: map[int]repository.Statistic{
-			1: {
-				ID:       1,
-				Type:     repository.StatisticTypeView,
-				BannerID: 1,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			2: {
-				ID:       2,
-				Type:     repository.StatisticTypeClick,
-				BannerID: 1,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			3: {
-				ID:       3,
-				Type:     repository.StatisticTypeView,
-				BannerID: 2,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			4: {
-				ID:       4,
-				Type:     repository.StatisticTypeView,
-				BannerID: 3,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			5: {
-				ID:       5,
-				Type:     repository.StatisticTypeClick,
-				BannerID: 3,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			6: {
-				ID:       6,
-				Type:     repository.StatisticTypeView,
-				BannerID: 1,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			7: {
-				ID:       7,
-				Type:     repository.StatisticTypeView,
-				BannerID: 3,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
-			8: {
-				ID:       8,
-				Type:     repository.StatisticTypeClick,
-				BannerID: 3,
-				SlotID:   1,
-				GroupID:  1,
-				CreateAt: time.Now().UTC(),
-			},
+	var testCases = []struct {
+		rotationRepository  memory.RotationRepository
+		statisticRepository memory.StatisticRepository
+		slotID              int
+		groupID             int
+		err                 error
+		expectedBannerID    int
+	}{
+		{
+			rotationRepository:  memory.RotationRepository{},
+			statisticRepository: memory.StatisticRepository{},
+			slotID:              1,
+			groupID:             1,
+			err:                 ErrRotationsListEmpty,
+			expectedBannerID:    0,
 		},
-		ID: 9,
+		{
+			rotationRepository: memory.RotationRepository{
+				DB: map[int]repository.Rotation{
+					1: {
+						ID:          1,
+						BannerID:    1,
+						SlotID:      1,
+						Description: "Banner 1",
+						CreateAt:    time.Now().UTC(),
+					},
+					2: {
+						ID:          2,
+						BannerID:    2,
+						SlotID:      1,
+						Description: "Banner 2",
+						CreateAt:    time.Now().UTC(),
+					},
+				},
+				ID: 3,
+			},
+			statisticRepository: memory.StatisticRepository{
+				DB: map[int]repository.Statistic{
+					1: {
+						ID:       1,
+						Type:     repository.StatisticTypeView,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+				},
+			},
+			slotID:           1,
+			groupID:          1,
+			err:              nil,
+			expectedBannerID: 2,
+		},
+		{
+			rotationRepository: memory.RotationRepository{
+				DB: map[int]repository.Rotation{
+					1: {
+						ID:          1,
+						BannerID:    1,
+						SlotID:      1,
+						Description: "Banner 1",
+						CreateAt:    time.Now().UTC(),
+					},
+					2: {
+						ID:          2,
+						BannerID:    2,
+						SlotID:      1,
+						Description: "Banner 2",
+						CreateAt:    time.Now().UTC(),
+					},
+					3: {
+						ID:          3,
+						BannerID:    3,
+						SlotID:      1,
+						Description: "Banner 3",
+						CreateAt:    time.Now().UTC(),
+					},
+				},
+				ID: 4,
+			},
+			statisticRepository: memory.StatisticRepository{
+				DB: map[int]repository.Statistic{
+					1: {
+						ID:       1,
+						Type:     repository.StatisticTypeView,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					2: {
+						ID:       2,
+						Type:     repository.StatisticTypeClick,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					3: {
+						ID:       3,
+						Type:     repository.StatisticTypeView,
+						BannerID: 2,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					4: {
+						ID:       4,
+						Type:     repository.StatisticTypeView,
+						BannerID: 3,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					5: {
+						ID:       5,
+						Type:     repository.StatisticTypeClick,
+						BannerID: 3,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					6: {
+						ID:       6,
+						Type:     repository.StatisticTypeView,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					7: {
+						ID:       7,
+						Type:     repository.StatisticTypeView,
+						BannerID: 3,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					8: {
+						ID:       8,
+						Type:     repository.StatisticTypeClick,
+						BannerID: 3,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+				},
+				ID: 9,
+			},
+			slotID:           1,
+			groupID:          1,
+			err:              nil,
+			expectedBannerID: 3,
+		},
+		{
+			rotationRepository: memory.RotationRepository{
+				DB: map[int]repository.Rotation{
+					1: {
+						ID:          1,
+						BannerID:    1,
+						SlotID:      1,
+						Description: "Banner 1",
+						CreateAt:    time.Now().UTC(),
+					},
+					2: {
+						ID:          2,
+						BannerID:    2,
+						SlotID:      2,
+						Description: "Banner 2",
+						CreateAt:    time.Now().UTC(),
+					},
+					3: {
+						ID:          3,
+						BannerID:    3,
+						SlotID:      3,
+						Description: "Banner 3",
+						CreateAt:    time.Now().UTC(),
+					},
+					4: {
+						ID:          4,
+						BannerID:    4,
+						SlotID:      2,
+						Description: "Banner 4",
+						CreateAt:    time.Now().UTC(),
+					},
+				},
+				ID: 5,
+			},
+			statisticRepository: memory.StatisticRepository{
+				DB: map[int]repository.Statistic{
+					1: {
+						ID:       1,
+						Type:     repository.StatisticTypeView,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					2: {
+						ID:       2,
+						Type:     repository.StatisticTypeClick,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					3: {
+						ID:       3,
+						Type:     repository.StatisticTypeView,
+						BannerID: 2,
+						SlotID:   2,
+						GroupID:  4,
+						CreateAt: time.Now().UTC(),
+					},
+					4: {
+						ID:       4,
+						Type:     repository.StatisticTypeView,
+						BannerID: 3,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					5: {
+						ID:       5,
+						Type:     repository.StatisticTypeClick,
+						BannerID: 3,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					6: {
+						ID:       6,
+						Type:     repository.StatisticTypeView,
+						BannerID: 1,
+						SlotID:   1,
+						GroupID:  1,
+						CreateAt: time.Now().UTC(),
+					},
+					7: {
+						ID:       7,
+						Type:     repository.StatisticTypeView,
+						BannerID: 4,
+						SlotID:   2,
+						GroupID:  4,
+						CreateAt: time.Now().UTC(),
+					},
+					8: {
+						ID:       8,
+						Type:     repository.StatisticTypeClick,
+						BannerID: 4,
+						SlotID:   2,
+						GroupID:  4,
+						CreateAt: time.Now().UTC(),
+					},
+				},
+				ID: 9,
+			},
+			slotID:           2,
+			groupID:          4,
+			err:              nil,
+			expectedBannerID: 4,
+		},
 	}
 
-	rotationRepository := memory.RotationRepository{
-		DB: map[int]repository.Rotation{
-			1: {
-				ID:          1,
-				BannerID:    1,
-				SlotID:      1,
-				Description: "Banner 1",
-				CreateAt:    time.Now().UTC(),
+	for _, testCase := range testCases {
+		rotationService := RotationService{
+			RotationRepository: &testCase.rotationRepository,
+			StatisticService: &StatisticService{
+				StatisticRepository: &testCase.statisticRepository,
 			},
-			2: {
-				ID:          2,
-				BannerID:    2,
-				SlotID:      1,
-				Description: "Banner 2",
-				CreateAt:    time.Now().UTC(),
-			},
-			3: {
-				ID:          3,
-				BannerID:    3,
-				SlotID:      1,
-				Description: "Banner 3",
-				CreateAt:    time.Now().UTC(),
-			},
-		},
-		ID: 4,
+			StatisticRepository: &testCase.statisticRepository,
+		}
+
+		bannerID, _, err := rotationService.SelectBanner(context.Background(), testCase.slotID, testCase.groupID)
+
+		if err != nil {
+			assert.Error(t, testCase.err, &err)
+		} else {
+			assert.Equal(t, testCase.expectedBannerID, bannerID, "banners ids must match")
+		}
 	}
-
-	rotationService := RotationService{
-		RotationRepository: &rotationRepository,
-		StatisticService: &StatisticService{
-			StatisticRepository: &statisticRepository,
-		},
-		StatisticRepository: &statisticRepository,
-	}
-
-	slotID := 1
-	groupId := 1
-	expectedBannerID := 3
-
-	bannerID, _, _ := rotationService.SelectBanner(context.Background(), slotID, groupId)
-	assert.Equal(t, expectedBannerID, bannerID, "banners ids must match")
 }
