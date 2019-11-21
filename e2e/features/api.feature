@@ -24,7 +24,6 @@ Feature: microservices for banner-rotation implementation
     """
     Then The response code should be 200
     And The response should match id banner "1"
-    And I receive event with id banner "1"
 
 
   Scenario: Set transition for banner
@@ -36,7 +35,6 @@ Feature: microservices for banner-rotation implementation
     }
     """
     Then The response code should be 200
-    And I receive event with id banner "1"
 
   Scenario: Add banner2 to rotation
     When 4. I send "POST" request to "http://api:7766/banner/add" with "application/json" data:
@@ -59,7 +57,6 @@ Feature: microservices for banner-rotation implementation
     """
     Then The response code should be 200
     And The response should match id banner "2"
-    And I receive event with id banner "2"
 
   Scenario: Select banner to display
     When 6. I send "POST" request to "http://api:7766/banner/select" with "application/json" data:
@@ -71,7 +68,6 @@ Feature: microservices for banner-rotation implementation
     """
     Then The response code should be 200
     And The response should match id banner "1"
-    And I receive event with id banner "1"
 
   Scenario: Removes the banner from the rotation
     When 7. I send "DELETE" request to "http://api:7766/banner/remove/1"

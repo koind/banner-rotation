@@ -4,8 +4,6 @@ services:
   integration_tests:
     build: ./e2e
     command: "true"
-    environment:
-      TESTS_AMQP_DSN: "amqp://guest:guest@rabbit:5672/"
     tty: true
 
   api:
