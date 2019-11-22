@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+// Declaring commands to start an grpc server
 var GrpcServerCmd = &cobra.Command{
 	Use:   "grpc_server",
 	Short: "Run grpc server",
@@ -69,6 +70,7 @@ var GrpcServerCmd = &cobra.Command{
 	},
 }
 
+// When initializing parse the path to the configuration
 func init() {
 	GrpcServerCmd.Flags().StringVarP(
 		&config.Path,

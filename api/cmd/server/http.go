@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+// Declaring commands to start an http server
 var HttpServerCmd = &cobra.Command{
 	Use:   "http_server",
 	Short: "Run http server",
@@ -61,6 +62,7 @@ var HttpServerCmd = &cobra.Command{
 	},
 }
 
+// When initializing parse the path to the configuration
 func init() {
 	HttpServerCmd.Flags().StringVarP(
 		&config.Path,

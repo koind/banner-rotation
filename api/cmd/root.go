@@ -6,15 +6,19 @@ import (
 	"log"
 )
 
+// Declaring root commands
 var rootCmd = &cobra.Command{
 	Use:   "banner-rotation",
 	Short: "Microservice banner-rotation",
 }
 
+// Adds http and grpc server commands during initialization
 func init() {
 	rootCmd.AddCommand(server.HttpServerCmd)
+	rootCmd.AddCommand(server.GrpcServerCmd)
 }
 
+// Runs the application
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
