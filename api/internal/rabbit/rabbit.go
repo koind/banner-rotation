@@ -16,13 +16,13 @@ type PublisherInterface interface {
 
 // Publisher
 type Publisher struct {
-	conn         amqp.Connection
+	conn         *amqp.Connection
 	exchangeName string
 	queueName    string
 }
 
 // Returns new publisher
-func NewPublisher(conn amqp.Connection, exchangeName string, queueName string) *Publisher {
+func NewPublisher(conn *amqp.Connection, exchangeName string, queueName string) *Publisher {
 	return &Publisher{
 		conn:         conn,
 		exchangeName: exchangeName,
