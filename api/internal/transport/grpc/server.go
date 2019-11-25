@@ -15,15 +15,30 @@ import (
 )
 
 // GRPC rotation service
-type RotationServer struct {
-	Domain          string
-	RotationService service.RotationService
-	Publisher       rabbit.PublisherInterface
-	Logger          *zap.Logger
+type GrpcServer struct {
+	domain          string
+	rotationService service.RotationService
+	publisher       rabbit.PublisherInterface
+	logger          *zap.Logger
+}
+
+// NewGRPCServer returns grpc server that wraps rotation business logic
+func NewGRPCServer(
+	domain string,
+	rotationService service.RotationService,
+	publisher rabbit.PublisherInterface,
+	logger *zap.Logger,
+) *GrpcServer {
+	return &GrpcServer{
+		domain:          domain,
+		rotationService: rotationService,
+		publisher:       publisher,
+		logger:          logger,
+	}
 }
 
 // Adds a banner in the rotation
-func (s *RotationServer) AddBanner(ctx context.Context, req *pb.RotationRequest) (*pb.RotationResponse, error) {
+func (s *GrpcServer) AddBanner(ctx context.Context, req *pb.RotationRequest) (*pb.RotationResponse, error) {
 	if ctx.Err() == context.Canceled {
 		return nil, errors.New("client cancelled, abandoning.")
 	}
@@ -36,7 +51,7 @@ func (s *RotationServer) AddBanner(ctx context.Context, req *pb.RotationRequest)
 
 	rotation.SetDatetimeOfCreate()
 
-	newRotation, err := s.RotationService.Add(ctx, rotation)
+	newRotation, err := s.rotationService.Add(ctx, rotation)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +73,7 @@ func (s *RotationServer) AddBanner(ctx context.Context, req *pb.RotationRequest)
 }
 
 // Sets the transition on the banner
-func (s *RotationServer) SetTransition(ctx context.Context, t *pb.Transition) (*pb.Status, error) {
+func (s *GrpcServer) SetTransition(ctx context.Context, t *pb.Transition) (*pb.Status, error) {
 	if ctx.Err() == context.Canceled {
 		return nil, errors.New("client cancelled, abandoning.")
 	}
@@ -66,19 +81,19 @@ func (s *RotationServer) SetTransition(ctx context.Context, t *pb.Transition) (*
 	bannerID := int(t.GetBannerId())
 	groupID := int(t.GetGroupId())
 
-	rotation, err := s.RotationService.RotationRepository.FindOneByBannerID(ctx, bannerID)
+	rotation, err := s.rotationService.RotationRepository.FindOneByBannerID(ctx, bannerID)
 	if err != nil {
 		return nil, err
 	}
 
-	statistic, err := s.RotationService.SetTransition(ctx, *rotation, groupID)
+	statistic, err := s.rotationService.SetTransition(ctx, *rotation, groupID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.Publisher.Publish(ctx, *statistic)
+	err = s.publisher.Publish(ctx, *statistic)
 	if err != nil {
-		s.Logger.Error(
+		s.logger.Error(
 			"Failed to send message to queue",
 			zap.Error(err),
 		)
@@ -88,7 +103,7 @@ func (s *RotationServer) SetTransition(ctx context.Context, t *pb.Transition) (*
 }
 
 // Selects a banner to display
-func (s *RotationServer) SelectBanner(ctx context.Context, sl *pb.Select) (*pb.Banner, error) {
+func (s *GrpcServer) SelectBanner(ctx context.Context, sl *pb.Select) (*pb.Banner, error) {
 	if ctx.Err() == context.Canceled {
 		return nil, errors.New("client cancelled, abandoning.")
 	}
@@ -96,14 +111,14 @@ func (s *RotationServer) SelectBanner(ctx context.Context, sl *pb.Select) (*pb.B
 	slotID := int(sl.GetSlotId())
 	groupID := int(sl.GetGroupId())
 
-	bannerID, statistic, err := s.RotationService.SelectBanner(ctx, slotID, groupID)
+	bannerID, statistic, err := s.rotationService.SelectBanner(ctx, slotID, groupID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.Publisher.Publish(ctx, *statistic)
+	err = s.publisher.Publish(ctx, *statistic)
 	if err != nil {
-		s.Logger.Error(
+		s.logger.Error(
 			"Failed to send message to queue",
 			zap.Error(err),
 		)
@@ -117,14 +132,14 @@ func (s *RotationServer) SelectBanner(ctx context.Context, sl *pb.Select) (*pb.B
 }
 
 // Removes the banner from the rotation
-func (s *RotationServer) RemoveBanner(ctx context.Context, banner *pb.Banner) (*pb.Status, error) {
+func (s *GrpcServer) RemoveBanner(ctx context.Context, banner *pb.Banner) (*pb.Status, error) {
 	if ctx.Err() == context.Canceled {
 		return nil, errors.New("client cancelled, abandoning.")
 	}
 
 	bannerID := int(banner.GetId())
 
-	err := s.RotationService.Remove(ctx, bannerID)
+	err := s.rotationService.Remove(ctx, bannerID)
 	if err != nil {
 		return nil, err
 	}
@@ -133,11 +148,11 @@ func (s *RotationServer) RemoveBanner(ctx context.Context, banner *pb.Banner) (*
 }
 
 // Start fires up the grpc server
-func (s *RotationServer) Start() error {
+func (s *GrpcServer) Start() error {
 	gs := grpc.NewServer()
 	reflection.Register(gs)
 
-	l, err := net.Listen("tcp", s.Domain)
+	l, err := net.Listen("tcp", s.domain)
 	if err != nil {
 		return err
 	}

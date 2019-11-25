@@ -20,4 +20,4 @@ WORKDIR /root/
 COPY --from=build-env /opt/api .
 COPY --from=build-env /api/config ./config
 
-CMD ["./api", "http_server", "--config=./config/development/config.toml"]
+CMD ["./api", "run", "--config=./config/development/config.toml"]

@@ -14,8 +14,7 @@ var rootCmd = &cobra.Command{
 
 // Adds http and grpc server commands during initialization
 func init() {
-	rootCmd.AddCommand(server.HttpServerCmd)
-	rootCmd.AddCommand(server.GrpcServerCmd)
+	rootCmd.AddCommand(server.RunServerCmd)
 }
 
 // Runs the application

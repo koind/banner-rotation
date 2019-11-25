@@ -12,6 +12,8 @@ services:
     depends_on:
       - postgres
       - rabbit
+    environment:
+      SERVER_TYPE: "HTTP"
     restart: on-failure
     ports:
       - "7766:7766"
