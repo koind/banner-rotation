@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	queryInsertStatistic = `INSERT INTO statistics(type, banner_id, slot_id, group_id, create_at)
+	queryInsertStatistic = `INSERT INTO statistics(type, banner_id, slot_id, group_id, created_at)
 		VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	queryFindAllBySlotIDAndGroupID = `SELECT * FROM statistics WHERE slot_id=$1 AND group_id=$2`
 	queryRemoveByStatisticID       = `DELETE FROM statistics WHERE id=$1`

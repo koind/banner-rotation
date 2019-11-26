@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	ErrStatisticNotFound = errors.New("statistic not found")
+	ErrStatisticsNotFound = errors.New("statistics not found")
 )
 
 // Memory statistics repository
@@ -72,7 +72,7 @@ func (s *StatisticsRepository) Remove(ctx context.Context, ID int) error {
 	defer s.Unlock()
 
 	if _, has := s.DB[ID]; !has {
-		return ErrStatisticNotFound
+		return ErrStatisticsNotFound
 	}
 
 	delete(s.DB, ID)

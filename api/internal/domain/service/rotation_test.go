@@ -54,11 +54,11 @@ func TestRotationService_SetTransition(t *testing.T) {
 		GroupID:  8,
 	}
 
-	statistic, err := rotationService.SetTransition(context.Background(), rotation, groupID)
+	statistics, err := rotationService.SetTransition(context.Background(), rotation, groupID)
 	assert.Nil(t, err)
 
-	expectedStatistics.CreatedAt = statistic.CreatedAt
-	assert.Equal(t, &expectedStatistics, statistic)
+	expectedStatistics.CreatedAt = statistics.CreatedAt
+	assert.Equal(t, &expectedStatistics, statistics)
 }
 
 func TestRotationService_Remove(t *testing.T) {

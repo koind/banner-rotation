@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	queryInsertRotation = `INSERT INTO rotations(banner_id, slot_id, description, create_at)
+	queryInsertRotation = `INSERT INTO rotations(banner_id, slot_id, description, created_at)
 		VALUES ($1, $2, $3, $4) RETURNING id`
 	queryFindRotationByBannerID = `SELECT * FROM rotations WHERE banner_id=$1`
 	queryFindAllBySlotID        = `SELECT * FROM rotations WHERE slot_id=$1`

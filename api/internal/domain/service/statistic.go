@@ -25,7 +25,7 @@ func (s *StatisticsService) Save(
 	groupID int,
 	statisticType int,
 ) (*repository.Statistics, error) {
-	statistic := repository.Statistics{
+	statistics := repository.Statistics{
 		Type:      statisticType,
 		BannerID:  rotation.BannerID,
 		SlotID:    rotation.SlotID,
@@ -33,7 +33,7 @@ func (s *StatisticsService) Save(
 		CreatedAt: time.Now().UTC(),
 	}
 
-	newStatistics, err := s.StatisticsRepository.Add(ctx, statistic)
+	newStatistics, err := s.StatisticsRepository.Add(ctx, statistics)
 	if err != nil {
 		return nil, errors.Wrap(err, "error saving statistics")
 	}

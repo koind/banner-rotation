@@ -59,15 +59,15 @@ func TestStatisticsService_Save(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		statistic, _ := statisticsService.Save(
+		statistics, _ := statisticsService.Save(
 			context.Background(),
 			testCase.rotation,
 			testCase.groupID,
 			testCase.statisticsType,
 		)
 
-		testCase.expectedStatistics.CreatedAt = statistic.CreatedAt
+		testCase.expectedStatistics.CreatedAt = statistics.CreatedAt
 
-		assert.Equal(t, &testCase.expectedStatistics, statistic, "values must match")
+		assert.Equal(t, &testCase.expectedStatistics, statistics, "values must match")
 	}
 }

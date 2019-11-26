@@ -36,7 +36,7 @@ func (s *Statistics) IsTypeClick() bool {
 // The repository interface statistics
 type StatisticsRepositoryInterface interface {
 	// Adds statistics
-	Add(ctx context.Context, statistic Statistics) (*Statistics, error)
+	Add(ctx context.Context, statistics Statistics) (*Statistics, error)
 
 	// Find all the statistics by slot and group
 	FindAllBySlotIDAndGroupID(ctx context.Context, slotID int, groupID int) ([]*Statistics, error)
