@@ -56,7 +56,7 @@ func (s *GrpcServer) AddBanner(ctx context.Context, req *pb.RotationRequest) (*p
 		return nil, err
 	}
 
-	createAt, err := ptypes.TimestampProto(newRotation.CreateAt)
+	createdAt, err := ptypes.TimestampProto(newRotation.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (s *GrpcServer) AddBanner(ctx context.Context, req *pb.RotationRequest) (*p
 		BannerId:    int32(newRotation.BannerID),
 		SlotId:      int32(newRotation.SlotID),
 		Description: newRotation.Description,
-		CreateAt:    createAt,
+		CreateAt:    createdAt,
 	}
 
 	return rotationResp, nil

@@ -48,7 +48,7 @@ func (r *RotationRepository) Add(ctx context.Context, rotation repository.Rotati
 		rotation.BannerID,
 		rotation.SlotID,
 		rotation.Description,
-		rotation.CreateAt,
+		rotation.CreatedAt,
 	).Scan(&rotation.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "error when adding banner in the rotation")
@@ -76,7 +76,7 @@ func (r *RotationRepository) FindOneByBannerID(ctx context.Context, bannerID int
 		&rotation.BannerID,
 		&rotation.SlotID,
 		&rotation.Description,
-		&rotation.CreateAt,
+		&rotation.CreatedAt,
 	)
 
 	if err == sql.ErrNoRows {

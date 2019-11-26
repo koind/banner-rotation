@@ -47,7 +47,7 @@ func (s *StatisticRepository) Add(ctx context.Context, statistic repository.Stat
 		statistic.BannerID,
 		statistic.SlotID,
 		statistic.GroupID,
-		statistic.CreateAt,
+		statistic.CreatedAt,
 	).Scan(&statistic.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "error when adding statistics")

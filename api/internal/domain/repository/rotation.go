@@ -34,10 +34,10 @@ type Rotation struct {
 	BannerID    int       `json:"bannerId" db:"banner_id"`
 	SlotID      int       `json:"slotId" db:"slot_id"`
 	Description string    `json:"description" db:"description"`
-	CreateAt    time.Time `json:"createAt" db:"create_at"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
 }
 
 // Set datetime of create
 func (r *Rotation) SetDatetimeOfCreate() {
-	r.CreateAt = time.Now().UTC()
+	r.CreatedAt = time.Now().UTC()
 }

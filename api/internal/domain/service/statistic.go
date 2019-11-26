@@ -26,11 +26,11 @@ func (s *StatisticService) Save(
 	statisticType int,
 ) (*repository.Statistic, error) {
 	statistic := repository.Statistic{
-		Type:     statisticType,
-		BannerID: rotation.BannerID,
-		SlotID:   rotation.SlotID,
-		GroupID:  groupID,
-		CreateAt: time.Now().UTC(),
+		Type:      statisticType,
+		BannerID:  rotation.BannerID,
+		SlotID:    rotation.SlotID,
+		GroupID:   groupID,
+		CreatedAt: time.Now().UTC(),
 	}
 
 	newStatistic, err := s.StatisticRepository.Add(ctx, statistic)

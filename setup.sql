@@ -3,7 +3,7 @@ create table rotations (
     banner_id bigint not null,
     slot_id bigint not null,
     description text not null,
-    create_at timestamp not null
+    created_at timestamp not null
 );
 create index slot_idx on rotations (slot_id);
 create index banner_idx on rotations (banner_id);
@@ -13,7 +13,7 @@ create table statistics (
     banner_id bigint not null,
     slot_id bigint not null,
     group_id bigint not null,
-    create_at timestamp not null
+    created_at timestamp not null
 );
 create index banner_idx_s on statistics (banner_id);
 create index slot_idx_s on statistics (slot_id);

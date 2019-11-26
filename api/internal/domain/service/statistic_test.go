@@ -26,7 +26,7 @@ func TestStatisticService_Save(t *testing.T) {
 				BannerID:    13,
 				SlotID:      5,
 				Description: "New rotation",
-				CreateAt:    time.Now().UTC(),
+				CreatedAt:   time.Now().UTC(),
 			},
 			groupID:       2,
 			statisticType: repository.StatisticTypeView,
@@ -44,7 +44,7 @@ func TestStatisticService_Save(t *testing.T) {
 				BannerID:    13,
 				SlotID:      5,
 				Description: "New rotation",
-				CreateAt:    time.Now().UTC(),
+				CreatedAt:   time.Now().UTC(),
 			},
 			groupID:       2,
 			statisticType: repository.StatisticTypeClick,
@@ -66,7 +66,7 @@ func TestStatisticService_Save(t *testing.T) {
 			testCase.statisticType,
 		)
 
-		testCase.expectedStatistic.CreateAt = statistic.CreateAt
+		testCase.expectedStatistic.CreatedAt = statistic.CreatedAt
 
 		assert.Equal(t, &testCase.expectedStatistic, statistic, "values must match")
 	}

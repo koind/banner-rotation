@@ -15,12 +15,12 @@ const (
 
 // Statistic model
 type Statistic struct {
-	ID       int       `json:"id" db:"id"`
-	Type     int       `json:"type" db:"type"`
-	BannerID int       `json:"bannerId" db:"banner_id"`
-	SlotID   int       `json:"slotId" db:"slot_id"`
-	GroupID  int       `json:"groupId" db:"group_id"`
-	CreateAt time.Time `json:"createAt" db:"create_at"`
+	ID        int       `json:"id" db:"id"`
+	Type      int       `json:"type" db:"type"`
+	BannerID  int       `json:"bannerId" db:"banner_id"`
+	SlotID    int       `json:"slotId" db:"slot_id"`
+	GroupID   int       `json:"groupId" db:"group_id"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 }
 
 // Is the view type
