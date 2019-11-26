@@ -24,7 +24,7 @@ Result:
   "bannerId": 1,
   "slotId": 1,
   "description": "banner 1",
-  "createAt": "2019-11-18T19:05:52.023825Z"
+  "createdAt": "2019-11-18T19:05:52.023825Z"
 }
 ```
 ---
