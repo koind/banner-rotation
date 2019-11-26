@@ -25,6 +25,7 @@ var RunServerCmd = &cobra.Command{
 		cfg := config.Init(config.Path)
 		rotationService, publisher, logger := Init(cfg)
 		serverType := os.Getenv("SERVER_TYPE")
+		serverType = "HTTP"
 
 		switch serverType {
 		case "HTTP":
