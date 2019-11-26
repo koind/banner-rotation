@@ -11,7 +11,7 @@ import (
 // Publisher interface
 type PublisherInterface interface {
 	// Send message to the queue
-	Publish(ctx context.Context, statistic repository.Statistic) error
+	Publish(ctx context.Context, statistics repository.Statistics) error
 }
 
 // Publisher
@@ -31,7 +31,7 @@ func NewPublisher(conn *amqp.Connection, exchangeName string, queueName string) 
 }
 
 // Send message to the queue
-func (p *Publisher) Publish(ctx context.Context, statistic repository.Statistic) error {
+func (p *Publisher) Publish(ctx context.Context, statistics repository.Statistics) error {
 	if ctx.Err() == context.Canceled {
 		return errors.New("sending statistics was aborted due to context cancellation")
 	}
@@ -65,7 +65,7 @@ func (p *Publisher) Publish(ctx context.Context, statistic repository.Statistic)
 		return errors.Wrap(err, "failed to bind the queue to the exchanger")
 	}
 
-	data, err := json.Marshal(statistic)
+	data, err := json.Marshal(statistics)
 	if err != nil {
 		return errors.Wrap(err, "failed to encode in json")
 	}

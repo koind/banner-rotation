@@ -27,13 +27,13 @@ func TestRotationService_Add(t *testing.T) {
 }
 
 func TestRotationService_SetTransition(t *testing.T) {
-	statisticRepository := memory.NewStatisticRepository()
+	statisticsRepository := memory.NewStatisticsRepository()
 	rotationService := RotationService{
 		RotationRepository: memory.NewRotationRepository(),
-		StatisticService: &StatisticService{
-			StatisticRepository: statisticRepository,
+		StatisticsService: &StatisticsService{
+			StatisticsRepository: statisticsRepository,
 		},
-		StatisticRepository: statisticRepository,
+		StatisticsRepository: statisticsRepository,
 	}
 
 	groupID := 8
@@ -46,9 +46,9 @@ func TestRotationService_SetTransition(t *testing.T) {
 		CreatedAt:   time.Now().UTC(),
 	}
 
-	expectedStatistic := repository.Statistic{
+	expectedStatistics := repository.Statistics{
 		ID:       1,
-		Type:     repository.StatisticTypeClick,
+		Type:     repository.StatisticsTypeClick,
 		BannerID: 13,
 		SlotID:   5,
 		GroupID:  8,
@@ -57,8 +57,8 @@ func TestRotationService_SetTransition(t *testing.T) {
 	statistic, err := rotationService.SetTransition(context.Background(), rotation, groupID)
 	assert.Nil(t, err)
 
-	expectedStatistic.CreatedAt = statistic.CreatedAt
-	assert.Equal(t, &expectedStatistic, statistic)
+	expectedStatistics.CreatedAt = statistic.CreatedAt
+	assert.Equal(t, &expectedStatistics, statistic)
 }
 
 func TestRotationService_Remove(t *testing.T) {
@@ -83,20 +83,20 @@ func TestRotationService_Remove(t *testing.T) {
 
 func TestRotationService_SelectBanner(t *testing.T) {
 	var testCases = []struct {
-		rotationRepository  memory.RotationRepository
-		statisticRepository memory.StatisticRepository
-		slotID              int
-		groupID             int
-		err                 error
-		expectedBannerID    int
+		rotationRepository   memory.RotationRepository
+		statisticsRepository memory.StatisticsRepository
+		slotID               int
+		groupID              int
+		err                  error
+		expectedBannerID     int
 	}{
 		{
-			rotationRepository:  memory.RotationRepository{},
-			statisticRepository: memory.StatisticRepository{},
-			slotID:              1,
-			groupID:             1,
-			err:                 ErrRotationsListEmpty,
-			expectedBannerID:    0,
+			rotationRepository:   memory.RotationRepository{},
+			statisticsRepository: memory.StatisticsRepository{},
+			slotID:               1,
+			groupID:              1,
+			err:                  ErrRotationsListEmpty,
+			expectedBannerID:     0,
 		},
 		{
 			rotationRepository: memory.RotationRepository{
@@ -118,11 +118,11 @@ func TestRotationService_SelectBanner(t *testing.T) {
 				},
 				ID: 3,
 			},
-			statisticRepository: memory.StatisticRepository{
-				DB: map[int]repository.Statistic{
+			statisticsRepository: memory.StatisticsRepository{
+				DB: map[int]repository.Statistics{
 					1: {
 						ID:        1,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -162,11 +162,11 @@ func TestRotationService_SelectBanner(t *testing.T) {
 				},
 				ID: 4,
 			},
-			statisticRepository: memory.StatisticRepository{
-				DB: map[int]repository.Statistic{
+			statisticsRepository: memory.StatisticsRepository{
+				DB: map[int]repository.Statistics{
 					1: {
 						ID:        1,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -174,7 +174,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					2: {
 						ID:        2,
-						Type:      repository.StatisticTypeClick,
+						Type:      repository.StatisticsTypeClick,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -182,7 +182,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					3: {
 						ID:        3,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  2,
 						SlotID:    1,
 						GroupID:   1,
@@ -190,7 +190,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					4: {
 						ID:        4,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  3,
 						SlotID:    1,
 						GroupID:   1,
@@ -198,7 +198,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					5: {
 						ID:        5,
-						Type:      repository.StatisticTypeClick,
+						Type:      repository.StatisticsTypeClick,
 						BannerID:  3,
 						SlotID:    1,
 						GroupID:   1,
@@ -206,7 +206,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					6: {
 						ID:        6,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -214,7 +214,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					7: {
 						ID:        7,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  3,
 						SlotID:    1,
 						GroupID:   1,
@@ -222,7 +222,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					8: {
 						ID:        8,
-						Type:      repository.StatisticTypeClick,
+						Type:      repository.StatisticsTypeClick,
 						BannerID:  3,
 						SlotID:    1,
 						GroupID:   1,
@@ -270,11 +270,11 @@ func TestRotationService_SelectBanner(t *testing.T) {
 				},
 				ID: 5,
 			},
-			statisticRepository: memory.StatisticRepository{
-				DB: map[int]repository.Statistic{
+			statisticsRepository: memory.StatisticsRepository{
+				DB: map[int]repository.Statistics{
 					1: {
 						ID:        1,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -282,7 +282,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					2: {
 						ID:        2,
-						Type:      repository.StatisticTypeClick,
+						Type:      repository.StatisticsTypeClick,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -290,7 +290,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					3: {
 						ID:        3,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  2,
 						SlotID:    2,
 						GroupID:   4,
@@ -298,7 +298,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					4: {
 						ID:        4,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  3,
 						SlotID:    1,
 						GroupID:   1,
@@ -306,7 +306,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					5: {
 						ID:        5,
-						Type:      repository.StatisticTypeClick,
+						Type:      repository.StatisticsTypeClick,
 						BannerID:  3,
 						SlotID:    1,
 						GroupID:   1,
@@ -314,7 +314,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					6: {
 						ID:        6,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  1,
 						SlotID:    1,
 						GroupID:   1,
@@ -322,7 +322,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					7: {
 						ID:        7,
-						Type:      repository.StatisticTypeView,
+						Type:      repository.StatisticsTypeView,
 						BannerID:  4,
 						SlotID:    2,
 						GroupID:   4,
@@ -330,7 +330,7 @@ func TestRotationService_SelectBanner(t *testing.T) {
 					},
 					8: {
 						ID:        8,
-						Type:      repository.StatisticTypeClick,
+						Type:      repository.StatisticsTypeClick,
 						BannerID:  4,
 						SlotID:    2,
 						GroupID:   4,
@@ -349,10 +349,10 @@ func TestRotationService_SelectBanner(t *testing.T) {
 	for _, testCase := range testCases {
 		rotationService := RotationService{
 			RotationRepository: &testCase.rotationRepository,
-			StatisticService: &StatisticService{
-				StatisticRepository: &testCase.statisticRepository,
+			StatisticsService: &StatisticsService{
+				StatisticsRepository: &testCase.statisticsRepository,
 			},
-			StatisticRepository: &testCase.statisticRepository,
+			StatisticsRepository: &testCase.statisticsRepository,
 		}
 
 		bannerID, _, err := rotationService.SelectBanner(context.Background(), testCase.slotID, testCase.groupID)

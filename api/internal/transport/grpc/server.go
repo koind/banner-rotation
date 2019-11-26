@@ -86,12 +86,12 @@ func (s *GrpcServer) SetTransition(ctx context.Context, t *pb.Transition) (*pb.S
 		return nil, err
 	}
 
-	statistic, err := s.rotationService.SetTransition(ctx, *rotation, groupID)
+	statistics, err := s.rotationService.SetTransition(ctx, *rotation, groupID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.publisher.Publish(ctx, *statistic)
+	err = s.publisher.Publish(ctx, *statistics)
 	if err != nil {
 		s.logger.Error(
 			"Failed to send message to queue",
@@ -111,12 +111,12 @@ func (s *GrpcServer) SelectBanner(ctx context.Context, sl *pb.Select) (*pb.Banne
 	slotID := int(sl.GetSlotId())
 	groupID := int(sl.GetGroupId())
 
-	bannerID, statistic, err := s.rotationService.SelectBanner(ctx, slotID, groupID)
+	bannerID, statistics, err := s.rotationService.SelectBanner(ctx, slotID, groupID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.publisher.Publish(ctx, *statistic)
+	err = s.publisher.Publish(ctx, *statistics)
 	if err != nil {
 		s.logger.Error(
 			"Failed to send message to queue",

@@ -8,24 +8,24 @@ import (
 )
 
 // The service interface statistics
-type StatisticServiceInterface interface {
+type StatisticsServiceInterface interface {
 	// Saves the statistics
-	Save(ctx context.Context, rotation repository.Rotation, groupID int, statisticType int) (*repository.Statistic, error)
+	Save(ctx context.Context, rotation repository.Rotation, groupID int, statisticType int) (*repository.Statistics, error)
 }
 
-// Statistic service
-type StatisticService struct {
-	StatisticRepository repository.StatisticRepositoryInterface
+// Statistics service
+type StatisticsService struct {
+	StatisticsRepository repository.StatisticsRepositoryInterface
 }
 
 // Saves the statistics
-func (s *StatisticService) Save(
+func (s *StatisticsService) Save(
 	ctx context.Context,
 	rotation repository.Rotation,
 	groupID int,
 	statisticType int,
-) (*repository.Statistic, error) {
-	statistic := repository.Statistic{
+) (*repository.Statistics, error) {
+	statistic := repository.Statistics{
 		Type:      statisticType,
 		BannerID:  rotation.BannerID,
 		SlotID:    rotation.SlotID,
@@ -33,10 +33,10 @@ func (s *StatisticService) Save(
 		CreatedAt: time.Now().UTC(),
 	}
 
-	newStatistic, err := s.StatisticRepository.Add(ctx, statistic)
+	newStatistics, err := s.StatisticsRepository.Add(ctx, statistic)
 	if err != nil {
 		return nil, errors.Wrap(err, "error saving statistics")
 	}
 
-	return newStatistic, nil
+	return newStatistics, nil
 }

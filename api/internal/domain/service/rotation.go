@@ -13,9 +13,9 @@ var (
 
 // Rotation service
 type RotationService struct {
-	StatisticService    StatisticServiceInterface
-	RotationRepository  repository.RotationRepositoryInterface
-	StatisticRepository repository.StatisticRepositoryInterface
+	StatisticsService    StatisticsServiceInterface
+	RotationRepository   repository.RotationRepositoryInterface
+	StatisticsRepository repository.StatisticsRepositoryInterface
 }
 
 // Adds a new banner to the rotation
@@ -43,13 +43,13 @@ func (b *RotationService) SetTransition(
 	ctx context.Context,
 	rotation repository.Rotation,
 	groupID int,
-) (*repository.Statistic, error) {
-	statistic, err := b.StatisticService.Save(ctx, rotation, groupID, repository.StatisticTypeClick)
+) (*repository.Statistics, error) {
+	statistics, err := b.StatisticsService.Save(ctx, rotation, groupID, repository.StatisticsTypeClick)
 	if err != nil {
 		return nil, errors.Wrap(err, "error when set the transition")
 	}
 
-	return statistic, nil
+	return statistics, nil
 }
 
 // Selects a banner to display
@@ -57,34 +57,34 @@ func (b *RotationService) SelectBanner(
 	ctx context.Context,
 	slotID int,
 	groupID int,
-) (int, *repository.Statistic, error) {
+) (int, *repository.Statistics, error) {
 	rotations, err := b.RotationRepository.FindAllBySlotID(ctx, slotID)
 	if err != nil {
 		return 0, nil, errors.Wrap(err, "error when searching for rotations by slot id for banner selection")
 	}
 
-	statistics, err := b.StatisticRepository.FindAllBySlotIDAndGroupID(ctx, slotID, groupID)
+	statisticsList, err := b.StatisticsRepository.FindAllBySlotIDAndGroupID(ctx, slotID, groupID)
 	if err != nil {
 		return 0, nil, errors.Wrap(err, "error getting statistics for a selection of banner")
 	}
 
-	rotation, err := b.defineBanner(rotations, statistics)
+	rotation, err := b.defineBanner(rotations, statisticsList)
 	if err != nil {
 		return 0, nil, errors.Wrap(err, "error while banner definition")
 	}
 
-	statistic, err := b.StatisticService.Save(ctx, *rotation, groupID, repository.StatisticTypeView)
+	statistics, err := b.StatisticsService.Save(ctx, *rotation, groupID, repository.StatisticsTypeView)
 	if err != nil {
 		return 0, nil, errors.Wrap(err, "error while save view")
 	}
 
-	return rotation.BannerID, statistic, nil
+	return rotation.BannerID, statistics, nil
 }
 
 // Determines which banner should be displayed
 func (b *RotationService) defineBanner(
 	rotations []*repository.Rotation,
-	statistics []*repository.Statistic,
+	statisticsList []*repository.Statistics,
 ) (*repository.Rotation, error) {
 	if len(rotations) <= 0 {
 		return nil, ErrRotationsListEmpty
@@ -95,22 +95,22 @@ func (b *RotationService) defineBanner(
 		banners[rotation.BannerID] = repository.Banner{ID: rotation.BannerID}
 	}
 
-	for _, statistic := range statistics {
-		banner, has := banners[statistic.BannerID]
+	for _, statistics := range statisticsList {
+		banner, has := banners[statistics.BannerID]
 
 		if !has {
 			continue
 		}
 
-		if statistic.IsTypeView() {
+		if statistics.IsTypeView() {
 			banner.Views++
 		}
 
-		if statistic.IsTypeClick() {
+		if statistics.IsTypeClick() {
 			banner.Clicks++
 		}
 
-		banner.GroupID = statistic.GroupID
+		banner.GroupID = statistics.GroupID
 
 		banners[banner.ID] = banner
 	}

@@ -12,41 +12,41 @@ var (
 )
 
 // Memory statistics repository
-type StatisticRepository struct {
+type StatisticsRepository struct {
 	sync.RWMutex
-	DB map[int]repository.Statistic
+	DB map[int]repository.Statistics
 	ID int
 }
 
 // Will return new memory statistics repository
-func NewStatisticRepository() *StatisticRepository {
-	return &StatisticRepository{
-		DB: make(map[int]repository.Statistic),
+func NewStatisticsRepository() *StatisticsRepository {
+	return &StatisticsRepository{
+		DB: make(map[int]repository.Statistics),
 		ID: 1,
 	}
 }
 
 // Adds statistics
-func (s *StatisticRepository) Add(
+func (s *StatisticsRepository) Add(
 	ctx context.Context,
-	statistic repository.Statistic,
-) (*repository.Statistic, error) {
+	statistics repository.Statistics,
+) (*repository.Statistics, error) {
 	s.Lock()
 	defer s.Unlock()
 
-	statistic.ID = s.ID
-	s.DB[statistic.ID] = statistic
+	statistics.ID = s.ID
+	s.DB[statistics.ID] = statistics
 	s.ID++
 
-	return &statistic, nil
+	return &statistics, nil
 }
 
 // Find all the statistics by slot and group
-func (s *StatisticRepository) FindAllBySlotIDAndGroupID(
+func (s *StatisticsRepository) FindAllBySlotIDAndGroupID(
 	ctx context.Context,
 	slotID int,
 	groupID int,
-) ([]*repository.Statistic, error) {
+) ([]*repository.Statistics, error) {
 	s.RLock()
 	defer s.RUnlock()
 
@@ -54,20 +54,20 @@ func (s *StatisticRepository) FindAllBySlotIDAndGroupID(
 		return nil, nil
 	}
 
-	statistics := make([]*repository.Statistic, 0)
+	statisticsList := make([]*repository.Statistics, 0)
 
-	for _, statistic := range s.DB {
-		if statistic.SlotID == slotID && statistic.GroupID == groupID {
-			statistic := statistic
-			statistics = append(statistics, &statistic)
+	for _, statistics := range s.DB {
+		if statistics.SlotID == slotID && statistics.GroupID == groupID {
+			statistics := statistics
+			statisticsList = append(statisticsList, &statistics)
 		}
 	}
 
-	return statistics, nil
+	return statisticsList, nil
 }
 
 // Removes statistics
-func (s *StatisticRepository) Remove(ctx context.Context, ID int) error {
+func (s *StatisticsRepository) Remove(ctx context.Context, ID int) error {
 	s.Lock()
 	defer s.Unlock()
 

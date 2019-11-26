@@ -68,13 +68,13 @@ func Init(cfg config.Options) (*service.RotationService, *rabbit.Publisher, *zap
 	defer conn.Close()
 
 	rotationRepository := postgres.NewRotationRepository(pg, *logger)
-	statisticRepository := postgres.NewStatisticRepository(pg, *logger)
-	statisticService := service.StatisticService{StatisticRepository: statisticRepository}
+	statisticsRepository := postgres.NewStatisticsRepository(pg, *logger)
+	statisticsService := service.StatisticsService{StatisticsRepository: statisticsRepository}
 	publisher := rabbit.NewPublisher(conn, cfg.RabbitMQ.ExchangeName, cfg.RabbitMQ.QueueName)
 	rotationService := service.RotationService{
-		StatisticService:    &statisticService,
-		RotationRepository:  rotationRepository,
-		StatisticRepository: statisticRepository,
+		StatisticsService:    &statisticsService,
+		RotationRepository:   rotationRepository,
+		StatisticsRepository: statisticsRepository,
 	}
 
 	return &rotationService, publisher, logger

@@ -15,26 +15,26 @@ const (
 	queryRemoveByStatisticID       = `DELETE FROM statistics WHERE id=$1`
 )
 
-// Postgres statistic repository
-type StatisticRepository struct {
+// Postgres statistics repository
+type StatisticsRepository struct {
 	DB     *sqlx.DB
 	logger zap.Logger
 }
 
-// Returns the postgres statistic repository
-func NewStatisticRepository(db *sqlx.DB, logger zap.Logger) *StatisticRepository {
-	return &StatisticRepository{
+// Returns the postgres statistics repository
+func NewStatisticsRepository(db *sqlx.DB, logger zap.Logger) *StatisticsRepository {
+	return &StatisticsRepository{
 		DB:     db,
 		logger: logger,
 	}
 }
 
 // Adds statistics
-func (s *StatisticRepository) Add(ctx context.Context, statistic repository.Statistic) (*repository.Statistic, error) {
+func (s *StatisticsRepository) Add(ctx context.Context, statistics repository.Statistics) (*repository.Statistics, error) {
 	if ctx.Err() == context.Canceled {
 		s.logger.Info(
 			"Adding a statistics was canceled due to context cancellation",
-			zap.Int("BannerID", statistic.BannerID),
+			zap.Int("BannerID", statistics.BannerID),
 		)
 
 		return nil, errors.New("adding a statistics was canceled due to context cancellation")
@@ -43,25 +43,25 @@ func (s *StatisticRepository) Add(ctx context.Context, statistic repository.Stat
 	err := s.DB.QueryRowContext(
 		ctx,
 		queryInsertStatistic,
-		statistic.Type,
-		statistic.BannerID,
-		statistic.SlotID,
-		statistic.GroupID,
-		statistic.CreatedAt,
-	).Scan(&statistic.ID)
+		statistics.Type,
+		statistics.BannerID,
+		statistics.SlotID,
+		statistics.GroupID,
+		statistics.CreatedAt,
+	).Scan(&statistics.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "error when adding statistics")
 	}
 
-	return &statistic, nil
+	return &statistics, nil
 }
 
 // Find all the statistics by slot and group
-func (s *StatisticRepository) FindAllBySlotIDAndGroupID(
+func (s *StatisticsRepository) FindAllBySlotIDAndGroupID(
 	ctx context.Context,
 	slotID int,
 	groupID int,
-) ([]*repository.Statistic, error) {
+) ([]*repository.Statistics, error) {
 	if ctx.Err() == context.Canceled {
 		s.logger.Info(
 			"Search for all statistics was interrupted due to context cancellation",
@@ -77,35 +77,35 @@ func (s *StatisticRepository) FindAllBySlotIDAndGroupID(
 		return nil, errors.Wrap(err, "error when searching statistics by slotId and groupId")
 	}
 
-	statistics := make([]*repository.Statistic, 0)
+	statisticsList := make([]*repository.Statistics, 0)
 
 	for rows.Next() {
-		var statistic repository.Statistic
-		err := rows.StructScan(&statistic)
+		var statistics repository.Statistics
+		err := rows.StructScan(&statistics)
 		if err != nil {
 			return nil, errors.Wrap(err, "error while scanning results to structure")
 		}
 
-		statistics = append(statistics, &statistic)
+		statisticsList = append(statisticsList, &statistics)
 	}
 
-	return statistics, nil
+	return statisticsList, nil
 }
 
 // Removes statistics
-func (s *StatisticRepository) Remove(ctx context.Context, ID int) error {
+func (s *StatisticsRepository) Remove(ctx context.Context, ID int) error {
 	if ctx.Err() == context.Canceled {
 		s.logger.Info(
-			"Removal statistic was interrupted due to the cancellation context",
+			"Removal statistics was interrupted due to the cancellation context",
 			zap.Int("ID", ID),
 		)
 
-		return errors.New("removal statistic was interrupted due to the cancellation context")
+		return errors.New("removal statistics was interrupted due to the cancellation context")
 	}
 
 	_, err := s.DB.ExecContext(ctx, queryRemoveByStatisticID, ID)
 	if err != nil {
-		return errors.Wrap(err, "error when remove statistic")
+		return errors.Wrap(err, "error when remove statistics")
 	}
 
 	return nil

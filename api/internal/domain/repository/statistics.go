@@ -7,14 +7,14 @@ import (
 
 const (
 	// Type of statistics view
-	StatisticTypeView = 1
+	StatisticsTypeView = 1
 
 	// Type of statistics click
-	StatisticTypeClick = 2
+	StatisticsTypeClick = 2
 )
 
-// Statistic model
-type Statistic struct {
+// Statistics model
+type Statistics struct {
 	ID        int       `json:"id" db:"id"`
 	Type      int       `json:"type" db:"type"`
 	BannerID  int       `json:"bannerId" db:"banner_id"`
@@ -24,22 +24,22 @@ type Statistic struct {
 }
 
 // Is the view type
-func (s *Statistic) IsTypeView() bool {
-	return s.Type == StatisticTypeView
+func (s *Statistics) IsTypeView() bool {
+	return s.Type == StatisticsTypeView
 }
 
 // Is the click type
-func (s *Statistic) IsTypeClick() bool {
-	return s.Type == StatisticTypeClick
+func (s *Statistics) IsTypeClick() bool {
+	return s.Type == StatisticsTypeClick
 }
 
 // The repository interface statistics
-type StatisticRepositoryInterface interface {
+type StatisticsRepositoryInterface interface {
 	// Adds statistics
-	Add(ctx context.Context, statistic Statistic) (*Statistic, error)
+	Add(ctx context.Context, statistic Statistics) (*Statistics, error)
 
 	// Find all the statistics by slot and group
-	FindAllBySlotIDAndGroupID(ctx context.Context, slotID int, groupID int) ([]*Statistic, error)
+	FindAllBySlotIDAndGroupID(ctx context.Context, slotID int, groupID int) ([]*Statistics, error)
 
 	// Removes statistics
 	Remove(ctx context.Context, ID int) error

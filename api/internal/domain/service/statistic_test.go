@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-func TestStatisticService_Save(t *testing.T) {
-	statisticService := StatisticService{
-		StatisticRepository: memory.NewStatisticRepository(),
+func TestStatisticsService_Save(t *testing.T) {
+	statisticsService := StatisticsService{
+		StatisticsRepository: memory.NewStatisticsRepository(),
 	}
 
 	testCases := map[string]struct {
-		rotation          repository.Rotation
-		groupID           int
-		statisticType     int
-		expectedStatistic repository.Statistic
+		rotation           repository.Rotation
+		groupID            int
+		statisticsType     int
+		expectedStatistics repository.Statistics
 	}{
-		"Save statistic with type type view": {
+		"Save statistics with type type view": {
 			rotation: repository.Rotation{
 				ID:          1,
 				BannerID:    13,
@@ -28,17 +28,17 @@ func TestStatisticService_Save(t *testing.T) {
 				Description: "New rotation",
 				CreatedAt:   time.Now().UTC(),
 			},
-			groupID:       2,
-			statisticType: repository.StatisticTypeView,
-			expectedStatistic: repository.Statistic{
+			groupID:        2,
+			statisticsType: repository.StatisticsTypeView,
+			expectedStatistics: repository.Statistics{
 				ID:       1,
-				Type:     repository.StatisticTypeView,
+				Type:     repository.StatisticsTypeView,
 				BannerID: 13,
 				SlotID:   5,
 				GroupID:  2,
 			},
 		},
-		"Save statistic with type type click": {
+		"Save statistics with type type click": {
 			rotation: repository.Rotation{
 				ID:          1,
 				BannerID:    13,
@@ -46,11 +46,11 @@ func TestStatisticService_Save(t *testing.T) {
 				Description: "New rotation",
 				CreatedAt:   time.Now().UTC(),
 			},
-			groupID:       2,
-			statisticType: repository.StatisticTypeClick,
-			expectedStatistic: repository.Statistic{
+			groupID:        2,
+			statisticsType: repository.StatisticsTypeClick,
+			expectedStatistics: repository.Statistics{
 				ID:       2,
-				Type:     repository.StatisticTypeClick,
+				Type:     repository.StatisticsTypeClick,
 				BannerID: 13,
 				SlotID:   5,
 				GroupID:  2,
@@ -59,15 +59,15 @@ func TestStatisticService_Save(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		statistic, _ := statisticService.Save(
+		statistic, _ := statisticsService.Save(
 			context.Background(),
 			testCase.rotation,
 			testCase.groupID,
-			testCase.statisticType,
+			testCase.statisticsType,
 		)
 
-		testCase.expectedStatistic.CreatedAt = statistic.CreatedAt
+		testCase.expectedStatistics.CreatedAt = statistic.CreatedAt
 
-		assert.Equal(t, &testCase.expectedStatistic, statistic, "values must match")
+		assert.Equal(t, &testCase.expectedStatistics, statistic, "values must match")
 	}
 }

@@ -88,7 +88,7 @@ func (s *RotationService) SetTransitionHandle(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	statistic, err := s.SetTransition(r.Context(), *rotation, rotationForm.GroupID)
+	statistics, err := s.SetTransition(r.Context(), *rotation, rotationForm.GroupID)
 	if err != nil {
 		s.logger.Error(
 			"Error when set the transition on the banner",
@@ -106,7 +106,7 @@ func (s *RotationService) SetTransitionHandle(w http.ResponseWriter, r *http.Req
 		w.Write([]byte("ok"))
 	}
 
-	err = s.publisher.Publish(r.Context(), *statistic)
+	err = s.publisher.Publish(r.Context(), *statistics)
 	if err != nil {
 		s.logger.Error(
 			"Failed to send message to queue",
@@ -132,7 +132,7 @@ func (s *RotationService) SelectBannerHandle(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	bannerID, statistic, err := s.SelectBanner(r.Context(), rotationForm.SlotID, rotationForm.GroupID)
+	bannerID, statistics, err := s.SelectBanner(r.Context(), rotationForm.SlotID, rotationForm.GroupID)
 	if err != nil {
 		s.logger.Error(
 			"Error when select banner",
@@ -151,7 +151,7 @@ func (s *RotationService) SelectBannerHandle(w http.ResponseWriter, r *http.Requ
 		json.NewEncoder(w).Encode(bannerID)
 	}
 
-	err = s.publisher.Publish(r.Context(), *statistic)
+	err = s.publisher.Publish(r.Context(), *statistics)
 	if err != nil {
 		s.logger.Error(
 			"Failed to send message to queue",
