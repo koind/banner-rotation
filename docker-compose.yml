@@ -34,7 +34,7 @@ services:
       POSTGRES_PASSWORD: 123123
       POSTGRES_DB: rotation
     volumes:
-      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - ./configs/setup.sql:/docker-entrypoint-initdb.d/setup.sql
     networks:
       - db
 
@@ -46,7 +46,7 @@ services:
     expose:
       - 15672
     volumes:
-      - ./rabbit.def.json:/etc/rabbitmq/definitions.json:ro
-      - ./rabbit.config:/etc/rabbitmq/rabbitmq.config:ro
+      - ./configs/rabbit.def.json:/etc/rabbitmq/definitions.json:ro
+      - ./configs/rabbit.config:/etc/rabbitmq/rabbitmq.config:ro
     networks:
       - rabbit
